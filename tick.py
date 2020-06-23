@@ -96,13 +96,15 @@ def load(filename) -> List[Send]:
     return sends
 
 def counts_by_grade(sends: List[Send]):
+    """Returns a dict where keys are the grade and values are the # sends at that grade from the argument, sorted by grade in ascending order"""
     counts = dict()
     for s in sends:
         if s.grade in counts:
             counts[s.grade] += 1
         else: 
             counts[s.grade] = 1
-    return counts
+    counts_sorted = sorted(counts.items(), key=lambda x:x[0])
+    return counts_sorted
 
 DEFAULT_TICK_FILENAME = "ticks.json" 
 if __name__ == "__main__":
