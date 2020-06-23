@@ -1,10 +1,9 @@
-#!/usr/bin/python3
-
+#!/usr/bin/python3 
 import csv
 import datetime
 import json
 import sys
-from typing import List
+from typing import Dict, List
 
 
 def strip_quotes(s: str):
@@ -96,6 +95,14 @@ def load(filename) -> List[Send]:
         sends = json.loads(contents, object_hook=as_send)
     return sends
 
+def counts_by_grade(sends: List[Send]):
+    counts = dict()
+    for s in sends:
+        if s.grade in counts:
+            counts[s.grade] += 1
+        else: 
+            counts[s.grade] = 1
+    return counts
 
 DEFAULT_TICK_FILENAME = "ticks.json" 
 if __name__ == "__main__":
