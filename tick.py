@@ -1,7 +1,9 @@
-#!/usr/bin/python3 
+#!/usr/bin/python3
 import csv
 import datetime
+from enum import Enum
 import json
+import operator
 import sys
 from typing import Dict, List
 
@@ -95,18 +97,42 @@ def load(filename) -> List[Send]:
         sends = json.loads(contents, object_hook=as_send)
     return sends
 
+
 def counts_by_grade(sends: List[Send]):
     """Returns a dict where keys are the grade and values are the # sends at that grade from the argument, sorted by grade in ascending order"""
     counts = dict()
     for s in sends:
         if s.grade in counts:
             counts[s.grade] += 1
-        else: 
+        else:
             counts[s.grade] = 1
-    counts_sorted = sorted(counts.items(), key=lambda x:x[0])
+    counts_sorted = sorted(counts.items(), key=lambda x: x[0])
     return counts_sorted
 
-DEFAULT_TICK_FILENAME = "ticks.json" 
+
+class DateComparison(Enum):
+    BEFORE = 1
+    AFTER = 2
+
+
+def filter_by_date(
+    sends: List[Send], date: str, comparison: DateComparison
+) -> List[Send]:
+    if comparison == DateComparison.BEFORE:
+        op = operator.lt
+    elif comparison == DateComparison.AFTER:
+        op = operator.ge
+
+    timestamp = datetime.date.fromisoformat(date)
+
+    filtered = list()
+    for s in sends:
+        if op(s.date, timestamp):
+            filtered.append(s)
+    return filtered
+
+
+DEFAULT_TICK_FILENAME = "ticks.json"
 if __name__ == "__main__":
     sends = load(DEFAULT_TICK_FILENAME)
     for s in sends:
