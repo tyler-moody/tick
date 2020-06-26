@@ -5,7 +5,7 @@ from enum import Enum
 import json
 import operator
 import sys
-from typing import Dict, List
+from typing import Dict, List, Set
 
 
 def strip_quotes(s: str):
@@ -132,13 +132,20 @@ def filter_by_date(
     return filtered
 
 
+def years_active(sends: List[Send]) -> Set[int]:
+    years = set()
+    for s in sends:
+        years.add(s.date.year)
+    return years
+
+def sends_in_year(sends: List[Send], year: int) -> List[Send]:
+    sends_in_year = list()
+    def year_matches(send: Send) -> bool:
+        return send.date.year == year
+    return list(filter(year_matches, sends))
+
 DEFAULT_TICK_FILENAME = "ticks.json"
 if __name__ == "__main__":
     sends = load(DEFAULT_TICK_FILENAME)
     for s in sends:
         print("{} {}".format(s.name, s.grade))
-    # filename = sys.argv[1]
-    # sends = convert_mp_csv(filename)
-    # save(sends, 'ticks.json')
-    # s = json.dumps(sends, cls = SendEncoder)
-    # f = json.loads(s, object_hook=as_send)

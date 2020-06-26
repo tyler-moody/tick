@@ -59,3 +59,24 @@ def test_filter_by_date_after():
     filtered = tick.filter_by_date(sends, "2000-01-01", tick.DateComparison.AFTER)
     assert len(filtered) == 1
     assert filtered[0].name == "after"
+
+def test_years_active():
+    sends = list()
+    sends.append(tick.Send("before", "v0", "1999-12-31", "location", "send", "notes",))
+    sends.append(tick.Send("before", "v0", "2003-12-31", "location", "send", "notes",))
+    sends.append(tick.Send("before", "v0", "2020-12-31", "location", "send", "notes",))
+    years = tick.years_active(sends)
+    assert years == {1999, 2003, 2020}
+
+def test_sends_in_year():
+    sends = list()
+    sends.append(tick.Send("before", "v0", "1999-12-31", "location", "send", "notes",))
+    sends.append(tick.Send("included_0", "v0", "2003-12-31", "location", "send", "notes",))
+    sends.append(tick.Send("included_1", "v0", "2003-01-01", "location", "send", "notes",))
+    sends.append(tick.Send("before", "v0", "2020-12-31", "location", "send", "notes",))
+    sends_in_2003 = tick.sends_in_year(sends, 2003)
+    expected = sends[1:3]
+    assert sends_in_2003 == expected
+
+
+
